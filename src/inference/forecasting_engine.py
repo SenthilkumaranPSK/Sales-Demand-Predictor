@@ -23,6 +23,7 @@ from src.training.custom_model_trainer import CustomModelTrainer
 from src.features.seasonality import extract_seasonality_features
 from src.features.preprocessing import FeaturePreprocessor
 from config.settings import settings
+from config.constants import CONFIDENCE_Z_SCORES, QUANTILE_CONVERSION_FACTORS
 
 logger = logging.getLogger(__name__)
 
@@ -877,12 +878,8 @@ class ForecastingEngine:
             std_dev = (yhat_upper - yhat_lower) / (2 * 1.28)
             
             # Generate intervals for 50%, 80%, 90%
-            # 50% ≈ ±0.67 std, 80% ≈ ±1.28 std, 90% ≈ ±1.645 std
-            z_scores = {
-                '50%': 0.674,
-                '80%': 1.282,
-                '90%': 1.645
-            }
+            # Using z-scores from config.constants
+            z_scores = CONFIDENCE_Z_SCORES
             
             for level, z in z_scores.items():
                 lower = (yhat - z * std_dev).tolist()
